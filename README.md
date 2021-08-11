@@ -1,2 +1,1 @@
-# products-custom-calculator
-Custom products calculator.
+# Custom Products Calculator
