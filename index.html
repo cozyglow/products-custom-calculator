@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.cozyglow.co.uk/css/main.min.css" rel="stylesheet" crossorigin="anonymous">
+    <style>
+      body {
+        padding-bottom: 8rem;
+      }
+
+      img {
+        transition: all .2s ease-in-out;
+      }
+    </style>
+
+    <title>Custom Soy Candle - Cozy Glow</title>
+  </head>
+  <body>
+    <h1 class="visually-hidden">Customise your Soy Candle</h1>
+    <form id="configuration-form">
+      <div class="container mt-3">
+        <div class="row">
+          <div class="col col-xs-12 col-lg-6">
+            <img src="assets/img/soy-candle.png" class="img-fluid sticky-top" alt="Custom Soy Candle">
+          </div>
+          <div class="col col-xs-12 col-lg-6">
+            <div class="mb-3">
+              <div class="h1" aria-hidden="true">Customise your Soy Candle</div>
+            </div>
+            <div class="border-top mb-3">
+              <div class="mt-3">
+                <fieldset>
+                  <label for="inputSize" class="form-label m-0">
+                    <h3>Size</h3>
+                  </label>
+                  <div class="input-group input-group-lg">
+                    <input type="number" class="form-control" placeholder="190" id="inputSize" value="190">
+                    <span class="input-group-text">ml</span>
+                  </div>
+                </fieldset>
+              </div>
+              <div class="mt-3">
+                <h3>Cleaning</h3>
+                <fieldset>
+                  <div class="btn-group btn-group-lg d-flex" role="group">
+                    <input type="radio" class="btn-check" name="clean" id="cleanFalse" autocomplete="off" value="false" checked>
+                    <label class="btn btn-outline-primary" for="cleanFalse">None</label>
+                    <input type="radio" class="btn-check" name="clean" id="cleanTrue" autocomplete="off" value="true">
+                    <label class="btn btn-outline-primary" for="cleanTrue">Clean</label>
+                  </div>
+                </fieldset>
+              </div>
+              <div class="mt-3">
+                <h3>Colour</h3>
+                <fieldset>
+                  <div class="btn-group btn-group-lg d-flex" role="group">
+                    <input type="radio" class="btn-check" name="color" id="colorFalse" autocomplete="off" value="false" checked>
+                    <label class="btn btn-outline-primary" for="colorFalse">None</label>
+                    <input type="radio" class="btn-check" name="color" id="colorTrue" autocomplete="off" value="true">
+                    <label class="btn btn-outline-primary" for="colorTrue">Colour</label>
+                  </div>
+                </fieldset>
+              </div>
+              <div class="mt-3">
+                <h3>Scent</h3>
+                <fieldset>
+                  <div class="d-grid gap-2" role="group">
+                    <input type="radio" class="btn-check" name="scent" id="scentNone" autocomplete="off" value="none" checked>
+                    <label class="btn btn-outline-primary btn-lg" for="scentNone">None</label>
+                    <input type="radio" class="btn-check" name="scent" id="scentRegular" autocomplete="off" value="regular">
+                    <label class="btn btn-outline-primary btn-lg" for="scentRegular">Regular</label>
+                    <input type="radio" class="btn-check" name="scent" id="scentPremium" autocomplete="off" value="premium">
+                    <label class="btn btn-outline-primary btn-lg" for="scentPremium">Premium</label>
+                  </div>
+                </fieldset>
+              </div>
+              <div class="mt-3">
+                <fieldset>
+                  <label for="inputWicks" class="form-label m-0">
+                    <h3>Wicks</h3>
+                  </label>
+                  <input type="number" class="form-control form-control-lg" placeholder="1" id="inputWicks" value="1" step="1" min="1">
+                </fieldset>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="bg-light border-top fixed-bottom">
+        <div class="py-3">
+          <div class="text-center">
+            <span class="display-1">£0.00</span>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.cozyglow.co.uk/js/main.bundle.min.js" crossorigin="anonymous"></script>
+    <script>
+      const products = {
+        size: {
+          pricePerUnit: 0.03
+        },
+        clean: {
+          pricePerUnit: 0.01
+        },
+        color: {
+          pricePerUnit: 0.001
+        },
+        scent: {
+          variations: {
+            regular: {
+              pricePerUnit: 0.005
+            },
+            premium: {
+              pricePerUnit: 0.01
+            }
+          }
+        },
+        wick: {
+          price: 0.05
+        }
+      };
+
+      function configure() {
+        const size = parseFloat(document.getElementById('inputSize').value);
+        const clean = document.querySelector('input[name="clean"]:checked').value === 'true';
+        const color = document.querySelector('input[name="color"]:checked').value === 'true';
+        const scent = document.querySelector('input[name="scent"]:checked').value;
+        const wicks = parseInt(document.getElementById('inputWicks').value);
+
+        const price = calcPrice(size, clean, color, scent, wicks);
+
+        const numberFormat = new Intl.NumberFormat('en-GB', {
+          style: 'currency',
+          currency: 'GBP'
+        });
+
+        document.getElementsByClassName('display-1')[0].textContent = numberFormat.format(price);
+        
+        document.getElementsByTagName('img')[0].style.transform = `scale(${Math.min(size / 1000, 1)})`;
+      }
+
+      function calcPrice(size = 0, clean = false, color = false, scent = 'none', wicks = 1) {
+        const sizePrice = calcSizePrice(size);
+        const cleanPrice = calcCleanPrice(size, clean);
+        const colorPrice = calcColorPrice(size, color);
+        const scentPrice = calcScentPrice(size, scent);
+        const wickPrice = calcWickPrice(wicks);
+
+        return sizePrice + cleanPrice + colorPrice + scentPrice + wickPrice;
+      }
+
+      function calcSizePrice(size = 0) {
+        return size * products.size.pricePerUnit;
+      }
+
+      function calcCleanPrice(size = 0, clean = false) {
+        return clean ? size * products.clean.pricePerUnit : 0;
+      }
+
+      function calcColorPrice(size = 0, color = false) {
+        return color ? size * products.color.pricePerUnit : 0;
+      }
+
+      function calcScentPrice(size = 0, scent = 'none') {
+        switch (scent) {
+          case 'none':
+            return 0;
+            break;
+          case 'regular':
+            return size * products.scent.variations.regular.pricePerUnit;
+            break;
+          case 'premium':
+            return size *  products.scent.variations.premium.pricePerUnit;
+            break;
+        }
+      }
+
+      function calcWickPrice(wicks) {
+        return wicks * products.wick.price;
+      }
+
+      document.getElementById('configuration-form').addEventListener('input', configure);
+
+      configure();
+    </script>
+  </body>
+</html>
